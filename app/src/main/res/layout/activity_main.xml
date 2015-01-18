@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#0099cc"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity/">
     <Button
         android:id="@+id/exit_button"
         style="?android:attr/buttonStyleSmall"
@@ -20,6 +20,43 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="17dp"
         android:text="@string/settings" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="North"
+        android:id="@+id/northView"
+        android:layout_below="@+id/exit_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="58dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="East"
+        android:id="@+id/eastview"
+        android:layout_below="@+id/northView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="South"
+        android:id="@+id/southView"
+        android:layout_below="@+id/eastview"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="West"
+        android:id="@+id/westView"
+        android:layout_below="@+id/southView"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

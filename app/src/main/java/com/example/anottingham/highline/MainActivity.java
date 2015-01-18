@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.anottingham.highline.util.SystemUiHider;
@@ -28,9 +29,15 @@ public class MainActivity extends Activity {
     MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer;
     SensorManager mSensorManager;
     Sensor mAccelerometer;
-    float ALPHA = 0.03f;
+    Float ALPHA = 0.03f;
     Float azimuth = null;
-    Float azimuthRad = null;
+    Float pi = (float)Math.PI;
+
+    TextView northText = (TextView) findViewById(R.id.northView);
+    TextView eastText = (TextView) findViewById(R.id.eastview);
+    TextView southText = (TextView) findViewById(R.id.southView);
+    TextView westText = (TextView) findViewById(R.id.westView);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +61,6 @@ public class MainActivity extends Activity {
         }
 
 
-
         exit_button = (Button) findViewById(R.id.exit_button);
         exit_button.setOnClickListener((android.view.View.OnClickListener) this);
 
@@ -62,10 +68,10 @@ public class MainActivity extends Activity {
         settings_button.setOnClickListener((android.view.View.OnClickListener) this);
 
 		/* Initialize MediaPlayers */
-        NorthPlayer = MediaPlayer.create(this, R.raw.North);
-        EastPlayer = MediaPlayer.create(this, R.raw.East);
-        SouthPlayer = MediaPlayer.create(this, R.raw.South);
-        WestPlayer = MediaPlayer.create(this, R.raw.West);
+        NorthPlayer = MediaPlayer.create(this, R.raw.north);
+        EastPlayer = MediaPlayer.create(this, R.raw.east);
+        SouthPlayer = MediaPlayer.create(this, R.raw.south);
+        WestPlayer = MediaPlayer.create(this, R.raw.west);
 
         NorthPlayer.start();
         EastPlayer.start();
@@ -107,25 +113,64 @@ public class MainActivity extends Activity {
         return output;
     }
 
-    public float scale(Float azimuth){
+    //Scale the range 0-2pi to 0-1 for setting the player volumes
+    //This equation is simplified down
+    public Float scale(Float azimuth, Float min, Float max){
 
-        return (azimuth-0/360)*1;
-    }
-    public void setNorthEast(Float azimuth){
-    }
-
-
-    public void setSouthEast(Float azimuth){
-
+        return (((azimuth - min))/(max-min));
     }
 
-    public void setSouthWest(Float azimuth){
+    //Using the scaled volume, set the appropriate player's volumes
+    public void setNorthEast(Float scaledVol){
+        NorthPlayer.setVolume(1-scaledVol,1-scaledVol);
+        EastPlayer.setVolume(scaledVol, scaledVol);
+        SouthPlayer.setVolume(0,0);
+        WestPlayer.setVolume(0, 0);
+
+        northText.setText("North: "+Float.toString(1-scaledVol));
+        eastText.setText("East: "+Float.toString(scaledVol));
+        southText.setText("South: 0");
+        westText.setText("West: 0");
+
 
     }
 
-    public void setNorthWest(Float azimuth){
+    public void setSouthEast(Float scaledVol){
+        NorthPlayer.setVolume(0,0);
+        EastPlayer.setVolume(1-scaledVol,1-scaledVol);
+        SouthPlayer.setVolume(scaledVol, scaledVol);
+        WestPlayer.setVolume(0,0);
 
+        northText.setText("North: 0");
+        eastText.setText("East: "+Float.toString(1-scaledVol));
+        southText.setText("South: "+Float.toString(scaledVol));
+        westText.setText("West: 0");
     }
+
+    public void setSouthWest(Float scaledVol){
+        NorthPlayer.setVolume(0,0);
+        EastPlayer.setVolume(0,0);
+        SouthPlayer.setVolume(1-scaledVol,1-scaledVol);
+        WestPlayer.setVolume(scaledVol, scaledVol);
+
+        northText.setText("North: 0");
+        eastText.setText("East: 0");
+        southText.setText("South: "+Float.toString(1-scaledVol));
+        westText.setText("West: "+Float.toString(scaledVol));
+    }
+
+    public void setNorthWest(Float scaledVol){
+        NorthPlayer.setVolume(scaledVol, scaledVol);
+        EastPlayer.setVolume(0,0);
+        SouthPlayer.setVolume(0,0);
+        WestPlayer.setVolume(1-scaledVol,1-scaledVol);
+
+        northText.setText("North: "+Float.toString(scaledVol));
+        eastText.setText("East: 0");
+        southText.setText("South: 0");
+        westText.setText("West: "+Float.toString(1-scaledVol));
+    }
+
 
 
     // Event listener for compass sensor.
@@ -140,30 +185,28 @@ public class MainActivity extends Activity {
         public void onSensorChanged(SensorEvent event) {
             // angle between the magnetic north direction
             // 0=North, 90=East, 180=South, 270=West
-            azimuthRad = lowPass(event.values[0], azimuthRad);
-            azimuth = ((float)Math.toDegrees(azimuthRad)+360)%360;
+            azimuth = lowPass(event.values[0], azimuth);
 
-            if(azimuth >= 0 || azimuth < 90){
+            if(azimuth >= 0 || azimuth < (pi/2)){
 
-                //TODO: North-East
-                setNorthEast(azimuth);
+                setNorthEast(scale(azimuth, 0f, (pi/2)));
             }
 
-            if(azimuth >= 90 || azimuth < 180){
+            if(azimuth >= (pi/2) || azimuth < pi){
 
-                //TODO: South-East
-                setSouthEast(azimuth);
+                setSouthEast(scale(azimuth, (pi/2), pi));
             }
-            if(azimuth >= 180 || azimuth < 270){
 
-                //TODO: South-West
-                setSouthWest(azimuth);
-            }
-            if(azimuth >= 270 || azimuth < 360){
+            if(azimuth >= pi || azimuth < ((3*pi)/2)){
 
-                //TODO: North-West
-                setNorthWest(azimuth);
+                setSouthWest((scale(azimuth, pi, (3*pi)/2)));
             }
+
+            if(azimuth >= ((3*pi)/2) || azimuth < (2*pi)){
+
+                setNorthWest((scale(azimuth, (3*pi/2), (2*pi))));
+            }
+
 
         }
 
