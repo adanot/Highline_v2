@@ -26,7 +26,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     private CompassView compassView;
 
-    private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer;
+    private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer, voiceOver;
     private static SensorManager sensorService;
     private Sensor sensor;
 
@@ -56,6 +56,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         EastPlayer = MediaPlayer.create(this, R.raw.east);
         SouthPlayer = MediaPlayer.create(this, R.raw.south);
         WestPlayer = MediaPlayer.create(this, R.raw.west);
+
+        voiceOver = MediaPlayer.create(this, R.raw.voiceover);
     }
 
     @Override
