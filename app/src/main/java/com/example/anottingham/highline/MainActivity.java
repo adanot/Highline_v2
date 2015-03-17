@@ -103,6 +103,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             finish();
         }
 
+        startMediaPlayers();
         checkGpsState();
         checkLocationUpdates();
     }
