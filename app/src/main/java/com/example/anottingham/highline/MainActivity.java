@@ -116,7 +116,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         if (sensor != null) {
             sensorService.unregisterListener(this);
         }
-//        locationManager.removeUpdates(locationListener);
+        locationManager.removeUpdates(locationListener);
     }
 
     @Override
