@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private Sensor sensor;
 
     private LocationListener locationListener;
-    private LocationManager locationManager;
+    private LocationManager locationManager = null;
     private AlertDialog dialog;
 
     //coordinates of your polygon
@@ -55,6 +55,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         //initialize view components
         compassView = new CompassView(this);
@@ -115,7 +116,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         if (sensor != null) {
             sensorService.unregisterListener(this);
         }
-        locationManager.removeUpdates(locationListener);
+//        locationManager.removeUpdates(locationListener);
     }
 
     @Override
