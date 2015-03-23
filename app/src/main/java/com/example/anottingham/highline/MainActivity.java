@@ -17,9 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -32,8 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
  * @see com.example.anottingham.highline.util.SystemUiHider
  */
 public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener{
-
-    private CompassView compassView;
 
     private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer;
     private static SensorManager sensorService;
@@ -58,18 +54,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
 
         //initialize view components
-        compassView = new CompassView(this);
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
-        frameLayout.addView(compassView, new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-        );
-
         Button exit_button = (Button) findViewById(R.id.exit_button);
-        exit_button.setOnClickListener(this);
+        Button map_button = (Button) findViewById(R.id.map_button);
+        Button history_button = (Button) findViewById(R.id.history_button);
 
-        Button settings_button = (Button) findViewById(R.id.settings_button);
-        settings_button.setOnClickListener(this);
+        map_button.setOnClickListener(this);
+        history_button.setOnClickListener(this);
+        exit_button.setOnClickListener(this);
 
 		/* Initialize MediaPlayers */
         NorthPlayer = MediaPlayer.create(this, R.raw.north);
@@ -116,7 +107,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         if (sensor != null) {
             sensorService.unregisterListener(this);
         }
-        locationManager.removeUpdates(locationListener);
+        //locationManager.removeUpdates(locationListener);
     }
 
     @Override
@@ -215,7 +206,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                     .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            finish();
+                            android.os.Process.killProcess(android.os.Process.myPid());
                         }
                     });
             builder.show();
@@ -224,7 +215,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     private void checkLocationUpdates() {
         //Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) this.getSystemService(
+                Context.LOCATION_SERVICE);
 
         //Define a listener that responds to location updates
         locationListener = new LocationListener() {
@@ -232,7 +224,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             public void onLocationChanged(Location location) {
                 //Called when a new location is found
 
-                if(!pointIsInRegion(new LatLng(location.getLatitude(), location.getLongitude()), REGION)) {
+                if(!pointIsInRegion(new LatLng(
+                                location.getLatitude(),
+                                location.getLongitude()), REGION)) {
+
                     if(!dialog.isShowing()) {
                         dialog.show();
                         stopMediaPlayers();
@@ -314,6 +309,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.history_button:
+                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                break;
+
+            case R.id.map_button:
+                startActivity(new Intent(MainActivity.this, MapActivity.class));
+                break;
+
+            case R.id.share_button:
+                break;
+
             case R.id.exit_button:
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
@@ -325,7 +331,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         // angle between the magnetic north direction
         // 0=North, 90=East, 180=South, 270=West
         float azimuth = event.values[0];
-        compassView.updateData(azimuth);
         changeVolumeLevel(azimuth);
     }
 
