@@ -45,10 +45,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     //coordinates of your polygon
     private static final LatLng [] REGION = {
-            new LatLng(1, 1),
-            new LatLng(1, 2),
-            new LatLng(2, 2),
-            new LatLng(2, 1)
+            new LatLng(33.992527,-118.45536),
+            new LatLng(33.993714,-118.453069),
+            new LatLng(33.993536,-118.452704),
+            new LatLng(33.991806,-118.453927)
     };
 
     @Override
