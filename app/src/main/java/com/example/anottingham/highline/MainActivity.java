@@ -72,8 +72,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Error")
                 .setMessage("Please return to the service area")
-                .setCancelable(false)
-                .setIcon(android.R.drawable.ic_dialog_alert);
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
         dialog = builder.create();
 
     }
