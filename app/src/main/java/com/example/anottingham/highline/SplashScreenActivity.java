@@ -11,12 +11,12 @@ import android.widget.FrameLayout;
 
 
 public class SplashScreenActivity extends Activity implements View.OnClickListener {
-    Bundle b = new Bundle();
-    FrameLayout frameLayout = (FrameLayout) findViewById(R.id.splash_screen);
-    Animation anim = AnimationUtils.loadAnimation(SplashScreenActivity.this, R.anim.fade_out);
-    Button production = (Button) findViewById(R.id.prodBtn);
-    Button test = (Button) findViewById(R.id.testBtn);
 
+    private FrameLayout frameLayout = (FrameLayout) findViewById(R.id.splash_screen);
+    private Animation anim = AnimationUtils.loadAnimation(SplashScreenActivity.this, R.anim.fade_out);
+    private Button production = (Button) findViewById(R.id.prodBtn);
+    private Button test = (Button) findViewById(R.id.testBtn);
+    private Intent mainIntent = new Intent(SplashScreenActivity.this, MainActivity.class);
 
 
     @Override
@@ -27,17 +27,11 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
         test.setOnClickListener(this);
         production.setOnClickListener(this);
 
-
-
         anim.setAnimationListener(new Animation.AnimationListener() {
             //start activity after fade out
             @Override
             public void onAnimationEnd(Animation animation) {
-                Intent mainIntent = new Intent();
-                mainIntent.setClass(SplashScreenActivity.this, MainActivity.class);
-                mainIntent.putExtras(b);
                 startActivity(mainIntent);
-
             }
 
             //not in use method's
@@ -52,12 +46,12 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.testBtn:
-                b.putBoolean("debug",true);
+                mainIntent.putExtra("debug", true);
                 frameLayout.startAnimation(anim);
                 break;
 
             case R.id.prodBtn:
-                b.putBoolean("debug",false);
+                mainIntent.putExtra("debug", false);
                 frameLayout.startAnimation(anim);
                 break;
         }

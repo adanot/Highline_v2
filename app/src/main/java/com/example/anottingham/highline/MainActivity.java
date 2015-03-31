@@ -69,12 +69,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dbon = extras.getBoolean("debug");
-
+        dbon = getIntent().getBooleanExtra("debug", false);
 
         LinearLayout linLayout = (LinearLayout) findViewById(R.id.mainnav);
         Animation anim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
-
 
         linLayout.startAnimation(anim);
 
