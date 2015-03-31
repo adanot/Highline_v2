@@ -54,22 +54,6 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
             case R.id.testBtn:
                 mainIntent.putExtra("debug", true);
                 frameLayout.startAnimation(anim);
-
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        //Create an intent that will start the main activity.
-//                        Intent mainIntent = new Intent(SplashScreenActivity.this, MainActivity.class);
-//                        SplashScreenActivity.this.startActivity(mainIntent);
-//
-//                        //Finish splash activity so user cant go back to it.
-//                        SplashScreenActivity.this.finish();
-//
-//                        //Apply splash exit (fade out) and main entry (fade in) animation transitions.
-//                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                    }
-//                }, 2000);
                 break;
 
             case R.id.prodBtn:
