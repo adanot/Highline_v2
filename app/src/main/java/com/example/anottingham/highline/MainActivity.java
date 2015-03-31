@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private Sensor sensor;
 
     private boolean dbon = false;
-    private LocationListener locationListener;
+    private LocationListener locationListener = null;
     private LocationManager locationManager = null;
     private AlertDialog dialog;
 
@@ -72,6 +72,22 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         LinearLayout linLayout = (LinearLayout) findViewById(R.id.mainnav);
         Animation anim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
 
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                checkGpsState();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         linLayout.startAnimation(anim);
 
 
@@ -99,7 +115,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             WestPlayer = MediaPlayer.create(this, R.raw.west);
         }
 
-        VOPlayer.setLooping(false);
+
         //Error dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Error")
@@ -112,6 +128,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                     }
                 });
         dialog = builder.create();
+
 
     }
 
@@ -133,7 +150,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         }
 
         startMediaPlayers();
-        checkGpsState();
         checkLocationUpdates();
     }
 
@@ -144,7 +160,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         if (sensor != null) {
             sensorService.unregisterListener(this);
         }
-        locationManager.removeUpdates(locationListener);
+        if(locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     @Override
@@ -202,9 +220,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         startPlayer(EastPlayer);
         startPlayer(SouthPlayer);
         startPlayer(WestPlayer);
-        startPlayer(VOPlayer);
-        VOPlayer.setLooping(false);
-        VOPlayer.setVolume(0.4F,0.4F);
+        if(VOPlayer != null) {
+            startPlayer(VOPlayer);
+            VOPlayer.setLooping(false);
+            VOPlayer.setVolume(0.4F, 0.4F);
+        }
     }
 
     private void stopMediaPlayers() {
@@ -225,16 +245,16 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     }
 
     private void stopPlayer(MediaPlayer mp) {
-        if(mp.isPlaying()) {
+        if(mp != null) {
             mp.stop();
         }
     }
 
 
     private void checkGpsState() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
+        if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(false)
                     .setTitle("The gps is disabled.")
@@ -257,7 +277,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
 
     private void checkLocationUpdates() {
         //Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(
+        locationManager = (LocationManager) this.getSystemService(
                 Context.LOCATION_SERVICE);
 
         //Define a listener that responds to location updates
