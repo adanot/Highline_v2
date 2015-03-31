@@ -3,17 +3,76 @@
     android:id="@+id/splash_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@drawable/splash">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout"
+        android:background="#2d2e45" >
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="61dp"
+            android:src="@drawable/logo"
+            android:layout_weight="1"
+            android:id="@+id/imageView"
+            android:background="#2d2e45" />
+
+    </LinearLayout>
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/splash"
-       />
-    <ImageView
-        android:layout_width="264dp"
-        android:layout_height="75dp"
-        android:src="@drawable/logo"
-        />
+        android:layout_width="90dp"
+        android:layout_height="87dp"
+        android:id="@+id/omicron"
+        android:src="@drawable/omicron"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="10dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#852d2e45"
+        android:layout_gravity="center"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="263dp"
+            android:layout_height="140dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Echos of the Past"
+            android:id="@+id/textView"
+            android:textStyle="bold"
+            android:textSize="50sp"
+            android:textColor="#a9c748"
+            android:layout_margin="10dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 1.1"
+        android:id="@+id/textView2"
+        android:layout_gravity="center_horizontal|bottom"
+        android:textSize="20dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test mode"
+        android:id="@+id/testBtn"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="50dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Production"
+        android:id="@+id/prodBtn"
+        android:layout_gravity="left|bottom" />
 
 </FrameLayout>

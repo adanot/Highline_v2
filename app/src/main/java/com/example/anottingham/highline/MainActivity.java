@@ -17,7 +17,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -31,26 +34,49 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener{
 
-    private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer;
+    private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer, VOPlayer;
     private static SensorManager sensorService;
     private Sensor sensor;
 
+    private boolean dbon = false;
     private LocationListener locationListener;
     private LocationManager locationManager = null;
     private AlertDialog dialog;
 
+    Bundle extras = getIntent().getExtras();
+
     //coordinates of your polygon
     private static final LatLng [] REGION = {
-            new LatLng(33.992527,-118.45536),
+            /*new LatLng(33.992527,-118.45536),
             new LatLng(33.993714,-118.453069),
             new LatLng(33.993536,-118.452704),
-            new LatLng(33.991806,-118.453927)
+            new LatLng(33.991806,-118.453927)*/
+
+            new LatLng(40.740933, -74.008087),
+            new LatLng(40.740819, -74.007923),
+            new LatLng(40.739638, -74.008154),
+            new LatLng(40.739676, -74.008345),
+
+
+            /*new LatLng(1,1),
+            new LatLng(1,2),
+            new LatLng(2,2),
+            new LatLng(2,1)*/
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dbon = extras.getBoolean("debug");
+
+
+        LinearLayout linLayout = (LinearLayout) findViewById(R.id.mainnav);
+        Animation anim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
+
+
+        linLayout.startAnimation(anim);
 
 
         //initialize view components
@@ -63,11 +89,21 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         exit_button.setOnClickListener(this);
 
 		/* Initialize MediaPlayers */
-        NorthPlayer = MediaPlayer.create(this, R.raw.north);
-        EastPlayer = MediaPlayer.create(this, R.raw.east);
-        SouthPlayer = MediaPlayer.create(this, R.raw.south);
-        WestPlayer = MediaPlayer.create(this, R.raw.west);
+        if(dbon == false) {
+            NorthPlayer = MediaPlayer.create(this, R.raw.north_train);
+            EastPlayer = MediaPlayer.create(this, R.raw.east_train);
+            SouthPlayer = MediaPlayer.create(this, R.raw.south_train);
+            WestPlayer = MediaPlayer.create(this, R.raw.west_train);
+            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
+        }
+        else{
+            NorthPlayer = MediaPlayer.create(this, R.raw.north);
+            EastPlayer = MediaPlayer.create(this, R.raw.east);
+            SouthPlayer = MediaPlayer.create(this, R.raw.south);
+            WestPlayer = MediaPlayer.create(this, R.raw.west);
+        }
 
+        VOPlayer.setLooping(false);
         //Error dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Error")
@@ -155,6 +191,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         releasePlayer(EastPlayer);
         releasePlayer(SouthPlayer);
         releasePlayer(WestPlayer);
+        releasePlayer(VOPlayer);
     }
 
     private void releasePlayer(MediaPlayer mp) {
@@ -169,6 +206,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         startPlayer(EastPlayer);
         startPlayer(SouthPlayer);
         startPlayer(WestPlayer);
+        startPlayer(VOPlayer);
+        VOPlayer.setLooping(false);
+        VOPlayer.setVolume(0.4F,0.4F);
     }
 
     private void stopMediaPlayers() {
@@ -176,6 +216,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         stopPlayer(EastPlayer);
         stopPlayer(SouthPlayer);
         stopPlayer(WestPlayer);
+        stopPlayer(VOPlayer);
     }
 
     private void startPlayer(MediaPlayer mp) {
@@ -197,7 +238,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private void checkGpsState() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(false)
                     .setTitle("The gps is disabled.")
@@ -229,7 +270,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             public void onLocationChanged(Location location) {
                 //Called when a new location is found
 
-                if(!pointIsInRegion(new LatLng(
+                if( dbon == false && !pointIsInRegion(new LatLng(
                                 location.getLatitude(),
                                 location.getLongitude()), REGION)) {
 
