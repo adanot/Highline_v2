@@ -43,8 +43,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private LocationManager locationManager = null;
     private AlertDialog dialog;
 
-    Bundle extras = getIntent().getExtras();
-
     //coordinates of your polygon
     private static final LatLng [] REGION = {
             /*new LatLng(33.992527,-118.45536),
@@ -87,7 +85,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         exit_button.setOnClickListener(this);
 
 		/* Initialize MediaPlayers */
-        if(dbon == false) {
+        if(!dbon) {
             NorthPlayer = MediaPlayer.create(this, R.raw.north_train);
             EastPlayer = MediaPlayer.create(this, R.raw.east_train);
             SouthPlayer = MediaPlayer.create(this, R.raw.south_train);
