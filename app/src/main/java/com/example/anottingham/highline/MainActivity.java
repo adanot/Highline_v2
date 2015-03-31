@@ -266,7 +266,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             public void onLocationChanged(Location location) {
                 //Called when a new location is found
 
-                if( dbon == false && !pointIsInRegion(new LatLng(
+            if( !dbon && !pointIsInRegion(new LatLng(
                                 location.getLatitude(),
                                 location.getLongitude()), REGION)) {
 
