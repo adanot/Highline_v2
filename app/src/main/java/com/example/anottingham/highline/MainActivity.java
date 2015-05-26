@@ -22,6 +22,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton;
+
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -37,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer, VOPlayer;
     private static SensorManager sensorService;
     private Sensor sensor;
+
 
     private boolean dbon = false;
     private LocationListener locationListener = null;
@@ -95,17 +99,30 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         Button exit_button = (Button) findViewById(R.id.exit_button);
         Button map_button = (Button) findViewById(R.id.map_button);
         Button history_button = (Button) findViewById(R.id.history_button);
+        ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
+
+        vo_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    VOPlayer.start();
+                } else {
+                    VOPlayer.pause();
+
+                }
+            }
+        });
 
         map_button.setOnClickListener(this);
         history_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
+        vo_toggle.setOnClickListener(this);
 
 		/* Initialize MediaPlayers */
         if(!dbon) {
-            NorthPlayer = MediaPlayer.create(this, R.raw.north_train);
-            EastPlayer = MediaPlayer.create(this, R.raw.east_train);
-            SouthPlayer = MediaPlayer.create(this, R.raw.south_train);
-            WestPlayer = MediaPlayer.create(this, R.raw.west_train);
+            NorthPlayer = MediaPlayer.create(this, R.raw.north);
+            EastPlayer = MediaPlayer.create(this, R.raw.east);
+            SouthPlayer = MediaPlayer.create(this, R.raw.south);
+            WestPlayer = MediaPlayer.create(this, R.raw.west);
             VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
         }
         else{
@@ -113,6 +130,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             EastPlayer = MediaPlayer.create(this, R.raw.east);
             SouthPlayer = MediaPlayer.create(this, R.raw.south);
             WestPlayer = MediaPlayer.create(this, R.raw.west);
+            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
         }
 
 
@@ -385,6 +403,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             case R.id.exit_button:
                 android.os.Process.killProcess(android.os.Process.myPid());
                 break;
+
+
         }
     }
 
@@ -401,4 +421,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         //not in use
     }
+
+
 }

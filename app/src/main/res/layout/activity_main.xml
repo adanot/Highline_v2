@@ -49,6 +49,15 @@
         android:gravity="center"
         android:id="@+id/mainnav">
 
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voiceover"
+            android:id="@+id/vo_toggle"
+            android:layout_gravity="right"
+            android:onClick="onToggleClicked"
+            android:checked="true" />
+
         <Button
             android:id="@+id/history_button"
             style="?android:attr/buttonStyleSmall"
