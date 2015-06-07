@@ -1,5 +1,4 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/splash_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout"
-        android:background="#2d2e45" >
+        android:background="#2d2e45">
 
         <ImageView
             android:layout_width="0dp"
@@ -66,13 +65,24 @@
         android:text="Test mode"
         android:id="@+id/testBtn"
         android:layout_gravity="left|bottom"
-        android:layout_marginBottom="50dp" />
+        android:layout_marginBottom="100dp"
+        style="@style/Base.Widget.AppCompat.Button" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Production"
         android:id="@+id/prodBtn"
-        android:layout_gravity="left|bottom" />
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="50dp"
+        style="@style/Base.Widget.AppCompat.Button" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check for updates"
+        android:id="@+id/updateBtn"
+        android:layout_gravity="left|bottom"
+        style="@style/Base.Widget.AppCompat.Button" />
 
 </FrameLayout>

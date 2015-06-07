@@ -10,4 +10,9 @@
     <string name="history">History</string>
     <string name="share">Share</string>
 
+    <string name="ftp_file_name">app-debug.apk</string>
+    <string name="ftp_url">ftp.austinipm.com</string>
+    <string name="ftp_login">alex512</string>
+    <string name="ftp_password">High123!</string>
+
 </resources>
