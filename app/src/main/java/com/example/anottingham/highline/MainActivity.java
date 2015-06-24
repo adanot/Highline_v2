@@ -194,24 +194,28 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         float angle;
         if(azimuth <= 360 && azimuth >= 270) {
             angle = (azimuth - 270)/90;
+            angle = smoothingSound(angle);
             NorthPlayer.setVolume(angle, angle);
             angle = 1 - angle;
             WestPlayer.setVolume(angle, angle);
         }
         if(azimuth <= 270 && azimuth >= 180) {
             angle = (azimuth - 180)/90;
+            angle = smoothingSound(angle);
             WestPlayer.setVolume(angle, angle);
             angle = 1 - angle;
             SouthPlayer.setVolume(angle, angle);
         }
         if(azimuth <= 180 && azimuth >= 90) {
             angle = (azimuth - 90)/90;
+            angle = smoothingSound(angle);
             SouthPlayer.setVolume(angle, angle);
             angle = 1 - angle;
             EastPlayer.setVolume(angle, angle);
         }
         if(azimuth <= 90 && azimuth >= 0) {
             angle = azimuth/90;
+            angle = smoothingSound(angle);
             EastPlayer.setVolume(angle, angle);
             angle = 1 - angle;
             NorthPlayer.setVolume(angle, angle);
@@ -422,5 +426,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         //not in use
     }
 
-
+    private float smoothingSound(float angle) {
+        if(angle > 90) {
+            angle = 1;
+        }
+        return angle;
+    }
 }
