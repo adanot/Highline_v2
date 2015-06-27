@@ -5,26 +5,19 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 import android.widget.CompoundButton;
-
+import android.widget.LinearLayout;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -35,12 +28,10 @@ import com.google.android.gms.maps.model.LatLng;
  *
  * @see com.example.anottingham.highline.util.SystemUiHider
  */
-public class MainActivity extends Activity implements View.OnClickListener, SensorEventListener{
+public class MainActivity extends Activity implements View.OnClickListener{
 
-    private MediaPlayer NorthPlayer, EastPlayer, SouthPlayer, WestPlayer, VOPlayer;
-    private static SensorManager sensorService;
-    private Sensor sensor;
-
+    private MediaPlayer VOPlayer;
+    private boolean playing = false;
 
     private boolean dbon = false;
     private LocationListener locationListener = null;
@@ -101,13 +92,16 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         Button history_button = (Button) findViewById(R.id.history_button);
         ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
 
+        if(dbon) {
+            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
+        }
         vo_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                playing = isChecked;
                 if (isChecked) {
                     VOPlayer.start();
                 } else {
                     VOPlayer.pause();
-
                 }
             }
         });
@@ -116,23 +110,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
         history_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
         vo_toggle.setOnClickListener(this);
-
-		/* Initialize MediaPlayers */
-        if(!dbon) {
-            NorthPlayer = MediaPlayer.create(this, R.raw.north);
-            EastPlayer = MediaPlayer.create(this, R.raw.east);
-            SouthPlayer = MediaPlayer.create(this, R.raw.south);
-            WestPlayer = MediaPlayer.create(this, R.raw.west);
-            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
-        }
-        else{
-            NorthPlayer = MediaPlayer.create(this, R.raw.north);
-            EastPlayer = MediaPlayer.create(this, R.raw.east);
-            SouthPlayer = MediaPlayer.create(this, R.raw.south);
-            WestPlayer = MediaPlayer.create(this, R.raw.west);
-            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
-        }
-
 
         //Error dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -153,125 +130,32 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
     @Override
     protected void onResume() {
         super.onResume();
+        startService(new Intent(this, CompassService.class));
 
-        sensorService = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorService.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        if (sensor != null) {
-            sensorService.registerListener(this, sensor,
-                    SensorManager.SENSOR_DELAY_NORMAL);
-            Log.i("Compass MainActivity", "Registered for ORIENTATION Sensor");
-        } else {
-            Log.e("Compass MainActivity", "Registered for ORIENTATION Sensor");
-            Toast.makeText(this, "ORIENTATION Sensor not found",
-                    Toast.LENGTH_LONG).show();
-            finish();
+        if(VOPlayer != null) {
+            if (!VOPlayer.isPlaying() && playing) {
+                VOPlayer.start();
+                VOPlayer.setLooping(false);
+                VOPlayer.setVolume(0.4F, 0.4F);
+            }
         }
-
-        startMediaPlayers();
         checkLocationUpdates();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //to stop the listener and save battery
-        if (sensor != null) {
-            sensorService.unregisterListener(this);
-        }
-        if(locationListener != null) {
-            locationManager.removeUpdates(locationListener);
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releaseMediaResources();
-    }
+        stopService(new Intent(this, CompassService.class));
 
-    private void changeVolumeLevel(float azimuth) {
+        if(locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
 
-        float angle;
-        if(azimuth <= 360 && azimuth >= 270) {
-            angle = (azimuth - 270)/90;
-            angle = smoothingSound(angle);
-            NorthPlayer.setVolume(angle, angle);
-            angle = 1 - angle;
-            WestPlayer.setVolume(angle, angle);
-        }
-        if(azimuth <= 270 && azimuth >= 180) {
-            angle = (azimuth - 180)/90;
-            angle = smoothingSound(angle);
-            WestPlayer.setVolume(angle, angle);
-            angle = 1 - angle;
-            SouthPlayer.setVolume(angle, angle);
-        }
-        if(azimuth <= 180 && azimuth >= 90) {
-            angle = (azimuth - 90)/90;
-            angle = smoothingSound(angle);
-            SouthPlayer.setVolume(angle, angle);
-            angle = 1 - angle;
-            EastPlayer.setVolume(angle, angle);
-        }
-        if(azimuth <= 90 && azimuth >= 0) {
-            angle = azimuth/90;
-            angle = smoothingSound(angle);
-            EastPlayer.setVolume(angle, angle);
-            angle = 1 - angle;
-            NorthPlayer.setVolume(angle, angle);
-        }
-    }
-
-    private void releaseMediaResources() {
-        releasePlayer(NorthPlayer);
-        releasePlayer(EastPlayer);
-        releasePlayer(SouthPlayer);
-        releasePlayer(WestPlayer);
-        releasePlayer(VOPlayer);
-    }
-
-    private void releasePlayer(MediaPlayer mp) {
-        if(mp != null) {
-            mp.release();
-            mp = null;
-        }
-    }
-
-    private void startMediaPlayers() {
-        startPlayer(NorthPlayer);
-        startPlayer(EastPlayer);
-        startPlayer(SouthPlayer);
-        startPlayer(WestPlayer);
         if(VOPlayer != null) {
-            startPlayer(VOPlayer);
-            VOPlayer.setLooping(false);
-            VOPlayer.setVolume(0.4F, 0.4F);
+            VOPlayer.stop();
         }
-    }
 
-    private void stopMediaPlayers() {
-        stopPlayer(NorthPlayer);
-        stopPlayer(EastPlayer);
-        stopPlayer(SouthPlayer);
-        stopPlayer(WestPlayer);
-        stopPlayer(VOPlayer);
     }
-
-    private void startPlayer(MediaPlayer mp) {
-        if(!mp.isPlaying()) {
-            mp.start();
-            mp.setVolume(0, 0);
-            //repeat song when it's stop
-            mp.setLooping(true);
-        }
-    }
-
-    private void stopPlayer(MediaPlayer mp) {
-        if(mp != null) {
-            mp.stop();
-        }
-    }
-
 
     private void checkGpsState() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -290,7 +174,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                     .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            android.os.Process.killProcess(android.os.Process.myPid());
+                            stopService(new Intent(MainActivity.this, CompassService.class));
+                            finish();
+                            System.exit(0);
                         }
                     });
             builder.show();
@@ -308,19 +194,19 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
             public void onLocationChanged(Location location) {
                 //Called when a new location is found
 
-            if( !dbon && !pointIsInRegion(new LatLng(
-                                location.getLatitude(),
-                                location.getLongitude()), REGION)) {
+                if( !dbon && !pointIsInRegion(new LatLng(
+                        location.getLatitude(),
+                        location.getLongitude()), REGION)) {
 
                     if(!dialog.isShowing()) {
                         dialog.show();
-                        stopMediaPlayers();
+                        stopService(new Intent(MainActivity.this, CompassService.class));
                     }
 
                 } else {
                     if(dialog.isShowing()) {
                         dialog.dismiss();
-                        startMediaPlayers();
+                        startService(new Intent(MainActivity.this, CompassService.class));
                     }
                 }
 
@@ -405,31 +291,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Sens
                 break;
 
             case R.id.exit_button:
-                android.os.Process.killProcess(android.os.Process.myPid());
+                stopService(new Intent(MainActivity.this, CompassService.class));
+                finish();
+                System.exit(0);
                 break;
-
-
         }
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        // angle between the magnetic north direction
-        // 0=North, 90=East, 180=South, 270=West
-        float azimuth = event.values[0];
-        changeVolumeLevel(azimuth);
-    }
 
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        //not in use
-    }
-
-    private float smoothingSound(float angle) {
-        if(angle > 90) {
-            angle = 1;
-        }
-        return angle;
-    }
 }
