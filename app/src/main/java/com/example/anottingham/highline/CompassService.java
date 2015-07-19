@@ -10,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,6 +21,14 @@ public class CompassService extends Service {
     private Sensor sensor;
     private SensorEventListener listener;
     BroadcastReceiver mReceiver;
+
+    MyBinder binder = new MyBinder();
+
+    class MyBinder extends Binder {
+        CompassService getService() {
+            return CompassService.this;
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -52,19 +61,15 @@ public class CompassService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
 
     @Override
     public void onDestroy() {
         Log.d("CompassService", "Destroyed");
-        releaseMediaResources();
-
-        if (sensor != null) {
-            sensorService.unregisterListener(listener);
-        }
-        stopSelf();
+        sensorService.unregisterListener(listener);
         unregisterReceiver(mReceiver);
+        releaseMediaResources();
         super.onDestroy();
 
     }
@@ -142,11 +147,18 @@ public class CompassService extends Service {
         }
     }
 
-    private void startMediaPlayers() {
+    public void startMediaPlayers() {
         startPlayer(NorthPlayer);
         startPlayer(EastPlayer);
         startPlayer(SouthPlayer);
         startPlayer(WestPlayer);
+    }
+
+    public void pauseMediaPlayers() {
+        pausePlayer(NorthPlayer);
+        pausePlayer(EastPlayer);
+        pausePlayer(SouthPlayer);
+        pausePlayer(WestPlayer);
     }
 
     private void startPlayer(MediaPlayer mp) {
@@ -156,6 +168,10 @@ public class CompassService extends Service {
             //repeat song when it's stop
             mp.setLooping(true);
         }
+    }
+
+    private void pausePlayer(MediaPlayer mp) {
+        mp.pause();
     }
 
     public class ScreenReceiver extends BroadcastReceiver {

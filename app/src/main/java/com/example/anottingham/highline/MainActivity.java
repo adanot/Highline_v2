@@ -2,14 +2,17 @@ package com.example.anottingham.highline;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.view.View;
 import android.view.animation.Animation;
@@ -32,11 +35,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private MediaPlayer VOPlayer;
     private boolean playing = false;
+    private boolean isMediaPlayersWorking = true;
+    private Button stopMediaPlayerButton;
 
     private boolean dbon = false;
     private LocationListener locationListener = null;
     private LocationManager locationManager = null;
     private AlertDialog dialog;
+
+    boolean bound = false;
+    ServiceConnection sConn;
+    CompassService myService;
 
     //coordinates of your polygon
     private static final LatLng [] REGION = {
@@ -91,6 +100,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Button map_button = (Button) findViewById(R.id.map_button);
         Button history_button = (Button) findViewById(R.id.history_button);
         ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
+        stopMediaPlayerButton = (Button) findViewById(R.id.stop_button);
+
 
         if(dbon) {
             VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
@@ -110,6 +121,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         history_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
         vo_toggle.setOnClickListener(this);
+        stopMediaPlayerButton.setOnClickListener(this);
 
         //Error dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -130,7 +142,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume() {
         super.onResume();
-        startService(new Intent(this, CompassService.class));
+
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                myService = ((CompassService.MyBinder) binder).getService();
+                bound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                bound = false;
+            }
+        };
+
+        Intent i = new Intent(MainActivity.this, CompassService.class);
+        startService(i);
+        bindService(i, sConn, 0);
 
         if(VOPlayer != null) {
             if (!VOPlayer.isPlaying() && playing) {
@@ -295,9 +321,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 finish();
                 System.exit(0);
                 break;
+            case R.id.stop_button:
+                if(isMediaPlayersWorking) {
+                    stopMediaPlayerButton.setText("Start music");
+                    myService.pauseMediaPlayers();
+                    isMediaPlayersWorking = false;
+                } else {
+                    stopMediaPlayerButton.setText("Stop music");
+                    myService.startMediaPlayers();
+                    isMediaPlayersWorking = true;
+                }
+                break;
         }
     }
-
-
-
 }

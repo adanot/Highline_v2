@@ -15,7 +15,7 @@
         android:background="#2d2e45">
 
         <ImageView
-            android:layout_width="122dp"
+            android:layout_width="0dp"
             android:layout_height="61dp"
             android:src="@drawable/logo"
             android:layout_weight="1"
@@ -35,7 +35,7 @@
             android:background="@drawable/rounded"
             android:alpha=".93"
             android:textColor="#fff"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp" />
@@ -44,7 +44,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="369dp"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
         android:gravity="center"
         android:id="@+id/mainnav">
@@ -52,10 +52,9 @@
         <ToggleButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Voiceover"
+            android:text="@string/voice_over_toggle"
             android:id="@+id/vo_toggle"
-            android:layout_gravity="right"
-            android:onClick="onToggleClicked"
+            android:layout_gravity="end"
             android:checked="true" />
 
         <Button
@@ -69,7 +68,7 @@
             android:alpha=".93"
             android:layout_margin="5dp"
             android:textColor="#fff"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
         <Button
             android:id="@+id/map_button"
             style="?android:attr/buttonStyleSmall"
@@ -81,7 +80,7 @@
             android:alpha=".93"
             android:layout_margin="5dp"
             android:textColor="#fff"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
         <Button
             android:id="@+id/share_button"
             style="?android:attr/buttonStyleSmall"
@@ -93,7 +92,7 @@
             android:alpha=".93"
             android:layout_margin="5dp"
             android:textColor="#fff"
-            android:textSize="25dp" />
+            android:textSize="25sp" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -106,18 +105,30 @@
             android:alpha=".93"
             android:layout_margin="5dp"
             android:textColor="#fff"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:clickable="false" />
 
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:gravity="bottom">
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/stop_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stop_button"
+                android:padding="10dp"
+                android:background="@drawable/rounded"
+                android:alpha=".93"
+                android:layout_margin="5dp"
+                android:textColor="#fff"
+                android:textSize="25sp"/>
+
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"></LinearLayout>
-
-
-
-
 </LinearLayout>
