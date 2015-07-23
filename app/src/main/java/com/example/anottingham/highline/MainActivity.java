@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -52,13 +53,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
             /*new LatLng(33.992527,-118.45536),
             new LatLng(33.993714,-118.453069),
             new LatLng(33.993536,-118.452704),
-            new LatLng(33.991806,-118.453927)*/
+            new LatLng(33.991806,-118.453927)
 
             new LatLng(40.740933, -74.008087),
             new LatLng(40.740819, -74.007923),
             new LatLng(40.739638, -74.008154),
-            new LatLng(40.739676, -74.008345),
+            new LatLng(40.739676, -74.008345),*/
 
+            new LatLng(40.846736, -73.944125),
+            new LatLng(40.845177, -73.929191),
+            new LatLng(40.710313, -73.972406),
+            new LatLng(40.697559, -74.019613),
 
             /*new LatLng(1,1),
             new LatLng(1,2),
@@ -70,6 +75,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         isDebugOn = getIntent().getBooleanExtra("debug", false);
 

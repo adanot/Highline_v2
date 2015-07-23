@@ -21,6 +21,7 @@ public class CompassService extends Service {
     private Sensor sensor;
     private SensorEventListener listener;
     private BroadcastReceiver mReceiver;
+    private final Float northOffset = 45F;
 
     private MyBinder binder = new MyBinder();
 
@@ -101,6 +102,13 @@ public class CompassService extends Service {
     private void changeVolumeLevel(float azimuth) {
 
         float angle;
+        if(azimuth < northOffset){
+            azimuth = (360 - northOffset) + azimuth;
+        }
+        else{
+            azimuth = azimuth - northOffset;
+        }
+
         if(azimuth <= 360 && azimuth >= 270) {
             angle = (azimuth - 270)/90;
             angle = smoothingSound(angle);

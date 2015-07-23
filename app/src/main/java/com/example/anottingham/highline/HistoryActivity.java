@@ -2,6 +2,7 @@ package com.example.anottingham.highline;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class HistoryActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         //get the listView
         expListView = (ExpandableListView)findViewById(R.id.history);
