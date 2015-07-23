@@ -10,7 +10,7 @@
     <string name="history">History</string>
     <string name="share">Share</string>
     <string name="stop_button">Stop music</string>
-    <string name="voice_over_toggle">Voiceover</string>
+    <string name="voice_over_toggle">Skip</string>
 
     <string name="ftp_file_name">app-debug.apk</string>
     <string name="ftp_url">ftp.austinipm.com</string>

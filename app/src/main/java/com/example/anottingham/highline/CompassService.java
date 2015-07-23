@@ -20,9 +20,9 @@ public class CompassService extends Service {
     private static SensorManager sensorService;
     private Sensor sensor;
     private SensorEventListener listener;
-    BroadcastReceiver mReceiver;
+    private BroadcastReceiver mReceiver;
 
-    MyBinder binder = new MyBinder();
+    private MyBinder binder = new MyBinder();
 
     class MyBinder extends Binder {
         CompassService getService() {
@@ -183,7 +183,7 @@ public class CompassService extends Service {
         }
     }
 
-    public void refreshListener(){
+    private void refreshListener(){
         sensorService.unregisterListener(listener);
         sensorService.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }

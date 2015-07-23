@@ -12,15 +12,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -34,11 +33,12 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends Activity implements View.OnClickListener{
 
     private MediaPlayer VOPlayer;
-    private boolean playing = true;
     private boolean isMediaPlayersWorking = true;
+    private boolean needToShow = true;
     private Button stopMediaPlayerButton;
+    private Button voiceOver;
 
-    private boolean dbon = false;
+    private boolean isDebugOn = false;
     private LocationListener locationListener = null;
     private LocationManager locationManager = null;
     private AlertDialog dialog;
@@ -71,7 +71,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dbon = getIntent().getBooleanExtra("debug", false);
+        isDebugOn = getIntent().getBooleanExtra("debug", false);
 
         LinearLayout linLayout = (LinearLayout) findViewById(R.id.mainnav);
         Animation anim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in);
@@ -99,7 +99,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Button exit_button = (Button) findViewById(R.id.exit_button);
         Button map_button = (Button) findViewById(R.id.map_button);
         Button history_button = (Button) findViewById(R.id.history_button);
-        final ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
+        voiceOver = (Button) findViewById(R.id.vo_toggle);
         stopMediaPlayerButton = (Button) findViewById(R.id.stop_button);
 
 
@@ -108,27 +108,17 @@ public class MainActivity extends Activity implements View.OnClickListener{
             @Override
             public void onCompletion(MediaPlayer mp) {
                 myService.startMediaPlayers();
-                vo_toggle.setVisibility(View.GONE);
+                voiceOver.setVisibility(View.GONE);
             }
         });
-
-        vo_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                playing = isChecked;
-                if (isChecked) {
-                    VOPlayer.start();
-                    myService.pauseMediaPlayers();
-                } else {
-                    VOPlayer.pause();
-                    myService.startMediaPlayers();
-                }
-            }
-        });
+        VOPlayer.start();
+        VOPlayer.setLooping(false);
+        VOPlayer.setVolume(0.4F, 0.4F);
 
         map_button.setOnClickListener(this);
         history_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
-        vo_toggle.setOnClickListener(this);
+        voiceOver.setOnClickListener(this);
         stopMediaPlayerButton.setOnClickListener(this);
 
         //Error dialog
@@ -165,14 +155,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Intent i = new Intent(MainActivity.this, CompassService.class);
         startService(i);
         bindService(i, sConn, 0);
-
-        if(VOPlayer != null && playing) {
-            if (!VOPlayer.isPlaying()) {
-                VOPlayer.start();
-                VOPlayer.setLooping(false);
-                VOPlayer.setVolume(0.4F, 0.4F);
-            }
-        }
         checkLocationUpdates();
     }
 
@@ -228,19 +210,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
             public void onLocationChanged(Location location) {
                 //Called when a new location is found
 
-                if( !dbon && !pointIsInRegion(new LatLng(
+                if( !isDebugOn && !pointIsInRegion(new LatLng(
                         location.getLatitude(),
                         location.getLongitude()), REGION)) {
 
-                    if(!dialog.isShowing()) {
+                    if(!dialog.isShowing() && needToShow) {
                         dialog.show();
-                        stopService(new Intent(MainActivity.this, CompassService.class));
+                        myService.pauseMediaPlayers();
+                        needToShow = false;
+
+                        Handler h = new Handler();
+                        h.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                needToShow = true;
+                            }
+                        }, 15000);
                     }
 
                 } else {
                     if(dialog.isShowing()) {
                         dialog.dismiss();
-                        startService(new Intent(MainActivity.this, CompassService.class));
+                        myService.startMediaPlayers();
                     }
                 }
 
@@ -339,6 +330,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     myService.startMediaPlayers();
                     isMediaPlayersWorking = true;
                 }
+                break;
+
+            case R.id.vo_toggle:
+                VOPlayer.stop();
+                myService.startMediaPlayers();
+                voiceOver.setVisibility(View.GONE);
                 break;
         }
     }

@@ -49,13 +49,19 @@
         android:gravity="center"
         android:id="@+id/mainnav">
 
-        <ToggleButton
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:background="@drawable/rounded"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/voice_over_toggle"
             android:id="@+id/vo_toggle"
             android:layout_gravity="end"
-            android:checked="true" />
+            android:padding="10dp"
+            android:alpha=".93"
+            android:layout_margin="5dp"
+            android:textColor="#fff"
+            android:textSize="25sp"/>
 
         <Button
             android:id="@+id/history_button"

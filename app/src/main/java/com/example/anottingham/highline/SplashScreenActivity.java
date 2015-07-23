@@ -15,7 +15,6 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
     private FrameLayout frameLayout;
     private Animation anim;
     private Intent mainIntent;
-    private FtpConnectTask connectTask;
 
 
     @Override
@@ -65,7 +64,7 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
                 break;
 
             case R.id.updateBtn:
-                connectTask = new FtpConnectTask(this);
+                FtpConnectTask connectTask = new FtpConnectTask(this);
                 connectTask.execute();
                 break;
         }
