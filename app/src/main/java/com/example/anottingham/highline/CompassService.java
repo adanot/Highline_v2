@@ -38,8 +38,6 @@ public class CompassService extends Service {
         SouthPlayer = MediaPlayer.create(this, R.raw.south);
         WestPlayer = MediaPlayer.create(this, R.raw.west);
 
-        startMediaPlayers();
-
         listener = new compassSensor();
         sensorService = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorService.getDefaultSensor(Sensor.TYPE_ORIENTATION);

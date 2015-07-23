@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends Activity implements View.OnClickListener{
 
     private MediaPlayer VOPlayer;
-    private boolean playing = false;
+    private boolean playing = true;
     private boolean isMediaPlayersWorking = true;
     private Button stopMediaPlayerButton;
 
@@ -99,20 +99,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Button exit_button = (Button) findViewById(R.id.exit_button);
         Button map_button = (Button) findViewById(R.id.map_button);
         Button history_button = (Button) findViewById(R.id.history_button);
-        ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
+        final ToggleButton vo_toggle = (ToggleButton) findViewById(R.id.vo_toggle);
         stopMediaPlayerButton = (Button) findViewById(R.id.stop_button);
 
 
-        if(dbon) {
-            VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
-        }
+        VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
+        VOPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                myService.startMediaPlayers();
+                vo_toggle.setVisibility(View.GONE);
+            }
+        });
+
         vo_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 playing = isChecked;
                 if (isChecked) {
                     VOPlayer.start();
+                    myService.pauseMediaPlayers();
                 } else {
                     VOPlayer.pause();
+                    myService.startMediaPlayers();
                 }
             }
         });
@@ -158,8 +166,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
         startService(i);
         bindService(i, sConn, 0);
 
-        if(VOPlayer != null) {
-            if (!VOPlayer.isPlaying() && playing) {
+        if(VOPlayer != null && playing) {
+            if (!VOPlayer.isPlaying()) {
                 VOPlayer.start();
                 VOPlayer.setLooping(false);
                 VOPlayer.setVolume(0.4F, 0.4F);
