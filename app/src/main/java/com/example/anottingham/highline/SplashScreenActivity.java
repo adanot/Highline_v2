@@ -26,12 +26,12 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
         frameLayout = (FrameLayout) findViewById(R.id.splash_screen);
         anim = AnimationUtils.loadAnimation(SplashScreenActivity.this, R.anim.fade_out);
 
-        Button production = (Button) findViewById(R.id.prodBtn);
+        //Button production = (Button) findViewById(R.id.prodBtn);
         Button test = (Button) findViewById(R.id.testBtn);
         Button checkUpdates = (Button) findViewById(R.id.updateBtn);
 
         test.setOnClickListener(this);
-        production.setOnClickListener(this);
+        //22production.setOnClickListener(this);
         checkUpdates.setOnClickListener(this);
 
         anim.setAnimationListener(new Animation.AnimationListener() {
@@ -58,10 +58,10 @@ public class SplashScreenActivity extends Activity implements View.OnClickListen
                 frameLayout.startAnimation(anim);
                 break;
 
-            case R.id.prodBtn:
-                mainIntent.putExtra("debug", false);
+            /*case R.id.prodBtn:
+                mainIntent.putExtra("debug", true);
                 frameLayout.startAnimation(anim);
-                break;
+                break;*/
 
             case R.id.updateBtn:
                 FtpConnectTask connectTask = new FtpConnectTask(this);

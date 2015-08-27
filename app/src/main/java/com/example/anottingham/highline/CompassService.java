@@ -34,10 +34,10 @@ public class CompassService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        NorthPlayer = MediaPlayer.create(this, R.raw.north);
-        EastPlayer = MediaPlayer.create(this, R.raw.east);
-        SouthPlayer = MediaPlayer.create(this, R.raw.south);
-        WestPlayer = MediaPlayer.create(this, R.raw.west);
+        NorthPlayer = MediaPlayer.create(this, R.raw.train_north);
+        EastPlayer = MediaPlayer.create(this, R.raw.train_east);
+        SouthPlayer = MediaPlayer.create(this, R.raw.train_south);
+        WestPlayer = MediaPlayer.create(this, R.raw.train_west);
 
         listener = new compassSensor();
         sensorService = (SensorManager) getSystemService(Context.SENSOR_SERVICE);

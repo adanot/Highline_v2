@@ -122,19 +122,6 @@
             android:orientation="vertical"
             android:gravity="bottom">
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:id="@+id/stop_button"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/stop_button"
-                android:padding="10dp"
-                android:background="@drawable/rounded"
-                android:alpha=".93"
-                android:layout_margin="5dp"
-                android:textColor="#fff"
-                android:textSize="25sp"/>
-
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

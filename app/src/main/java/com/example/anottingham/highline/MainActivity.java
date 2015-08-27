@@ -3,26 +3,20 @@ package com.example.anottingham.highline;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
-import com.google.android.gms.maps.model.LatLng;
 
 
 /**
@@ -39,7 +33,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private Button stopMediaPlayerButton;
     private Button voiceOver;
 
-    private boolean isDebugOn = false;
+    private boolean isDebugOn = true;
     private LocationListener locationListener = null;
     private LocationManager locationManager = null;
     private AlertDialog dialog;
@@ -49,27 +43,35 @@ public class MainActivity extends Activity implements View.OnClickListener{
     CompassService myService;
 
     //coordinates of your polygon
-    private static final LatLng [] REGION = {
+    /*private static final LatLng [] REGION = {
             /*new LatLng(33.992527,-118.45536),
             new LatLng(33.993714,-118.453069),
             new LatLng(33.993536,-118.452704),
-            new LatLng(33.991806,-118.453927)
+            new LatLng(33.991806,-1183.453927)
 
             new LatLng(40.740933, -74.008087),
             new LatLng(40.740819, -74.007923),
             new LatLng(40.739638, -74.008154),
             new LatLng(40.739676, -74.008345),*/
 
+            /*new LatLng(37.265310, -7.031250),
+            new LatLng(58.516652, -8.085938),
+            new LatLng(60.478879, 36.562500),
+            new LatLng(34.415973, 34.101563)*/
+
+            /*
+
             new LatLng(40.846736, -73.944125),
             new LatLng(40.845177, -73.929191),
             new LatLng(40.710313, -73.972406),
-            new LatLng(40.697559, -74.019613),
+            new LatLng(40.697559, -74.019613)
 
+            */
             /*new LatLng(1,1),
             new LatLng(1,2),
             new LatLng(2,2),
             new LatLng(2,1)*/
-    };
+    //};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +92,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                checkGpsState();
+                //checkGpsState();
             }
 
             @Override
@@ -106,7 +108,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Button map_button = (Button) findViewById(R.id.map_button);
         Button history_button = (Button) findViewById(R.id.history_button);
         voiceOver = (Button) findViewById(R.id.vo_toggle);
-        stopMediaPlayerButton = (Button) findViewById(R.id.stop_button);
 
 
         VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
@@ -125,7 +126,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         history_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
         voiceOver.setOnClickListener(this);
-        stopMediaPlayerButton.setOnClickListener(this);
 
         //Error dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -161,7 +161,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Intent i = new Intent(MainActivity.this, CompassService.class);
         startService(i);
         bindService(i, sConn, 0);
-        checkLocationUpdates();
+        //checkLocationUpdates();
     }
 
     @Override
@@ -179,7 +179,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     }
 
-    private void checkGpsState() {
+    /*private void checkGpsState() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
@@ -305,7 +305,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         double red = (ax != bx) ? ((by - ay) / (bx - ax)) : Double.MAX_VALUE;
         double blue = (ax != px) ? ((py - ay) / (px - ax)) : Double.MAX_VALUE;
         return (blue >= red);
-    }
+    }*/
 
     @Override
     public void onClick(View v) {
@@ -326,17 +326,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 finish();
                 System.exit(0);
                 break;
-            case R.id.stop_button:
-                if(isMediaPlayersWorking) {
-                    stopMediaPlayerButton.setText("Start music");
-                    myService.pauseMediaPlayers();
-                    isMediaPlayersWorking = false;
-                } else {
-                    stopMediaPlayerButton.setText("Stop music");
-                    myService.startMediaPlayers();
-                    isMediaPlayersWorking = true;
-                }
-                break;
+
 
             case R.id.vo_toggle:
                 VOPlayer.stop();
