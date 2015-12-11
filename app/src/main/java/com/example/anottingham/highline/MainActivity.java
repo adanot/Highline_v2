@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -111,10 +112,27 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 
         VOPlayer = MediaPlayer.create(this, R.raw.voiceover);
+
+        // Create new thread for timing
+        Runnable audioWait = new Runnable() {
+            public void run() {
+
+                //Set sleep time to trigger train mediaplayers
+                SystemClock.sleep(51000);
+
+                myService.startMediaPlayers();
+
+            }
+        };
+
+        Thread waitThread = new Thread(audioWait);
+        waitThread.start();
+
+
+
         VOPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                myService.startMediaPlayers();
                 voiceOver.setVisibility(View.GONE);
             }
         });

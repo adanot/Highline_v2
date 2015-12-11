@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,6 +23,8 @@ public class CompassService extends Service {
     private SensorEventListener listener;
     private BroadcastReceiver mReceiver;
     private final Float northOffset = 45F;
+
+    private float attenuation;
 
     private MyBinder binder = new MyBinder();
 
@@ -56,6 +59,8 @@ public class CompassService extends Service {
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         mReceiver = new ScreenReceiver();
         registerReceiver(mReceiver, filter);
+
+
     }
 
     @Override
@@ -80,7 +85,7 @@ public class CompassService extends Service {
             // angle between the magnetic north direction
             // 0=North, 90=East, 180=South, 270=West
             float azimuth = event.values[0];
-            changeVolumeLevel(azimuth);
+            changeVolumeLevel(azimuth, attenuation);
             Log.d("CompassService", String.valueOf(azimuth));
         }
 
@@ -99,7 +104,7 @@ public class CompassService extends Service {
         return angle;
     }
 
-    private void changeVolumeLevel(float azimuth) {
+    private void changeVolumeLevel(float azimuth, float attenuation) {
 
         float angle;
         if(azimuth < northOffset){
@@ -112,30 +117,30 @@ public class CompassService extends Service {
         if(azimuth <= 360 && azimuth >= 270) {
             angle = (azimuth - 270)/90;
             angle = smoothingSound(angle);
-            NorthPlayer.setVolume(angle, angle);
+            NorthPlayer.setVolume(angle - attenuation, angle - attenuation);
             angle = 1 - angle;
-            WestPlayer.setVolume(angle, angle);
+            WestPlayer.setVolume(angle - attenuation, angle - attenuation);
         }
         if(azimuth <= 270 && azimuth >= 180) {
             angle = (azimuth - 180)/90;
             angle = smoothingSound(angle);
-            WestPlayer.setVolume(angle, angle);
+            WestPlayer.setVolume(angle - attenuation, angle - attenuation);
             angle = 1 - angle;
-            SouthPlayer.setVolume(angle, angle);
+            SouthPlayer.setVolume(angle - attenuation, angle - attenuation);
         }
         if(azimuth <= 180 && azimuth >= 90) {
             angle = (azimuth - 90)/90;
             angle = smoothingSound(angle);
-            SouthPlayer.setVolume(angle, angle);
+            SouthPlayer.setVolume(angle - attenuation, angle - attenuation);
             angle = 1 - angle;
-            EastPlayer.setVolume(angle, angle);
+            EastPlayer.setVolume(angle - attenuation, angle - attenuation);
         }
         if(azimuth <= 90 && azimuth >= 0) {
             angle = azimuth/90;
             angle = smoothingSound(angle);
-            EastPlayer.setVolume(angle, angle);
+            EastPlayer.setVolume(angle - attenuation, angle - attenuation);
             angle = 1 - angle;
-            NorthPlayer.setVolume(angle, angle);
+            NorthPlayer.setVolume(angle - attenuation, angle - attenuation);
         }
     }
 
@@ -170,9 +175,25 @@ public class CompassService extends Service {
     private void startPlayer(MediaPlayer mp) {
         if(!mp.isPlaying()) {
             mp.start();
+            attenuation = 0.5f;
             mp.setVolume(0, 0);
-            //repeat song when it's stop
+            //repeat song
             mp.setLooping(true);
+
+            // Create new thread for timing
+            Runnable audioWait = new Runnable() {
+                public void run() {
+
+                    //Set sleep time to trigger full audio
+                    SystemClock.sleep(10000);
+
+                    attenuation = 0f;
+                }
+            };
+
+            Thread waitThread = new Thread(audioWait);
+
+            waitThread.start();
         }
     }
 
